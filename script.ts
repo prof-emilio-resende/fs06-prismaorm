@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, User } from "@prisma/client";
 
 const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
@@ -83,6 +83,32 @@ async function main() {
     },
   });
   console.log(usrAndPostInnerJoin);
+
+  console.log("Repository...");
+  class PostRepository {
+    public async findByTitleAndText(title: string, text: string) {
+      return await prisma.post.findMany({
+        where: {
+          title: title,
+          text: {
+            contains: text,
+          },
+        },
+      });
+    }
+  }
+
+  const posts = await new PostRepository().findByTitleAndText(
+    "Emilio Dois Post Title",
+    "!"
+  );
+  console.log(posts);
+
+  console.log("query nativa!!!");
+  const usrs = await prisma.$queryRaw<User[]>(Prisma.sql`select * from user`);
+
+  console.log(usrs);
+  usrs.forEach((u) => console.log(u.email));
 }
 
 main()

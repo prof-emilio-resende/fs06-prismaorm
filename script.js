@@ -86,6 +86,27 @@ function main() {
             },
         });
         console.log(usrAndPostInnerJoin);
+        console.log("Repository...");
+        class PostRepository {
+            findByTitleAndText(title, text) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return yield prisma.post.findMany({
+                        where: {
+                            title: title,
+                            text: {
+                                contains: text,
+                            },
+                        },
+                    });
+                });
+            }
+        }
+        const posts = yield new PostRepository().findByTitleAndText("Emilio Dois Post Title", "!");
+        console.log(posts);
+        console.log("query nativa!!!");
+        const usrs = yield prisma.$queryRaw(client_1.Prisma.sql `select * from user`);
+        console.log(usrs);
+        usrs.forEach((u) => console.log(u.email));
     });
 }
 main()
